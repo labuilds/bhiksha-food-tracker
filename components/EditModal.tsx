@@ -16,8 +16,17 @@ export default function EditModal({ initialData, onClose, onSave }: { initialDat
                 <div className="p-4 sm:p-6 pb-2">
                     <DataEntryForm
                         initialData={initialData}
-                        onSubmit={async (data) => {
-                            await onSave(data);
+                        action={async (formData) => {
+                            await onSave({
+                                date: formData.get("date") as string,
+                                mealType: formData.get("meal_type") as string,
+                                volunteersCount: parseInt(formData.get("volunteers_count") as string) || 0,
+                                staffCount: parseInt(formData.get("staff_count") as string) || 0,
+                                foodItem: formData.get("food_item") as string,
+                                cookedQty: parseFloat(formData.get("cooked_qty") as string) || 0,
+                                returnedQty: parseFloat(formData.get("returned_qty") as string) || 0,
+                                remarks: formData.get("remarks") as string,
+                            });
                         }}
                         isEditing={true}
                     />

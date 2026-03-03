@@ -6,9 +6,9 @@ import EditModal from "./EditModal";
 import DeleteConfirm from "./DeleteConfirm";
 import { offlineFetch } from "@/lib/api";
 
-export default function MealView({ refreshTrigger }: { refreshTrigger: number }) {
-    const [meals, setMeals] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+export default function MealView({ initialMeals }: { initialMeals: any[] }) {
+    const [meals, setMeals] = useState<any[]>(initialMeals || []);
+    const [loading, setLoading] = useState(false);
 
     const [filterDate, setFilterDate] = useState("");
     const [filterMealType, setFilterMealType] = useState("");
@@ -33,8 +33,13 @@ export default function MealView({ refreshTrigger }: { refreshTrigger: number })
     };
 
     useEffect(() => {
-        fetchMeals();
-    }, [filterDate, filterMealType, refreshTrigger]);
+        if (filterDate || filterMealType) {
+            fetchMeals();
+        } else {
+            setMeals(initialMeals || []);
+            setLoading(false);
+        }
+    }, [filterDate, filterMealType, initialMeals]);
 
     const handleEditSave = async (data: any) => {
         if (!editingMeal) return;

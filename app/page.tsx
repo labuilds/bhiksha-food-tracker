@@ -1,63 +1,37 @@
-"use client";
+import { createClient } from "@/utils/supabase/server";
+import HomeClient from "@/components/HomeClient";
 
-import { useState } from "react";
-import DataEntryForm from "@/components/DataEntryForm";
-import MealView from "@/components/MealView";
-import ItemSearch from "@/components/ItemSearch";
-import { offlineFetch } from "@/lib/api";
+export const dynamic = 'force-dynamic';
 
-export default function Home() {
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
-    const [activeTab, setActiveTab] = useState<"dashboard" | "search">("dashboard");
+export default async function Home() {
+    const supabase = await createClient();
 
-    const handleEntrySubmit = async (data: any) => {
-        try {
-            await offlineFetch("/api/meals", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            });
-            // Trigger a refresh of the views
-            setRefreshTrigger(prev => prev + 1);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    const { data: meals, error } = await supabase
+        .from('meal_entries')
+        .select('*')
+        .order('date', { ascending: false })
+        .limit(20);
+
+    if (error) {
+        console.error("Error fetching initial meals:", error);
+    }
+
+    const initialMeals = meals?.map((meal: any) => ({
+        id: meal.id,
+        date: meal.date,
+        mealType: meal.meal_type,
+        volunteersCount: meal.volunteers_count,
+        staffCount: meal.staff_count,
+        foodItem: meal.food_item,
+        cookedQty: meal.cooked_qty,
+        returnedQty: meal.returned_qty,
+        consumedQty: meal.consumed_qty,
+        perPersonQty: meal.per_person_qty,
+        remarks: meal.remarks,
+        syncStatus: meal.sync_status
+    })) || [];
 
     return (
-        <div className="space-y-8 pt-24 pb-12">
-            <section className="glass-panel p-4 sm:p-6 md:p-8">
-                <DataEntryForm onSubmit={handleEntrySubmit} />
-            </section>
-
-            <section className="pt-2">
-                <div className="flex gap-2 mb-6 p-1 bg-stone-50 border border-stone-200 rounded-lg w-fit">
-                    <button
-                        onClick={() => setActiveTab("dashboard")}
-                        className={`px-5 py-2.5 font-medium text-sm rounded-md transition-all duration-300 ${activeTab === "dashboard"
-                            ? "bg-[#F36F21] shadow-md text-white"
-                            : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
-                            }`}
-                    >
-                        Dashboard
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("search")}
-                        className={`px-5 py-2.5 font-medium text-sm rounded-md transition-all duration-300 ${activeTab === "search"
-                            ? "bg-[#F36F21] shadow-md text-white"
-                            : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
-                            }`}
-                    >
-                        Item Analysis
-                    </button>
-                </div>
-
-                {activeTab === "dashboard" ? (
-                    <MealView refreshTrigger={refreshTrigger} />
-                ) : (
-                    <ItemSearch />
-                )}
-            </section>
-        </div>
+        <HomeClient initialMeals={initialMeals} />
     );
 }

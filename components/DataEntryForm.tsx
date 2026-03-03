@@ -7,11 +7,11 @@ type MealType = "Brunch" | "Dinner";
 
 interface DataEntryFormProps {
     initialData?: any;
-    onSubmit: (data: any) => Promise<void>;
+    action?: (formData: FormData) => Promise<void>;
     isEditing?: boolean;
 }
 
-export default function DataEntryForm({ initialData, onSubmit, isEditing = false }: DataEntryFormProps) {
+export default function DataEntryForm({ initialData, action, isEditing = false }: DataEntryFormProps) {
     const [date, setDate] = useState(initialData?.date ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
     const [mealType, setMealType] = useState<MealType>(initialData?.mealType || "Brunch");
     const [volunteersCount, setVolunteersCount] = useState(initialData?.volunteersCount?.toString() || "");
@@ -35,19 +35,11 @@ export default function DataEntryForm({ initialData, onSubmit, isEditing = false
     const totalPeople = (parseInt(volunteersCount) || 0) + (parseInt(staffCount) || 0);
     const perPersonQty = totalPeople > 0 ? (consumedQty / totalPeople) : 0;
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleAction = async (formData: FormData) => {
         setLoading(true);
-        await onSubmit({
-            date,
-            mealType,
-            volunteersCount: parseInt(volunteersCount) || 0,
-            staffCount: parseInt(staffCount) || 0,
-            foodItem,
-            cookedQty: parseFloat(cookedQty) || 0,
-            returnedQty: parseFloat(returnedQty) || 0,
-            remarks,
-        });
+        if (action) {
+            await action(formData);
+        }
 
         if (!isEditing) {
             setFoodItem("");
@@ -60,28 +52,28 @@ export default function DataEntryForm({ initialData, onSubmit, isEditing = false
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <form action={handleAction} className="flex flex-col gap-6">
             <h2 className="text-2xl font-bold tracking-tight text-stone-800 mb-2">{isEditing ? "Edit Meal Entry" : "New Meal Entry"}</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
                     <label>Date</label>
-                    <input type="date" required value={date} onChange={e => setDate(e.target.value)} className="w-full" />
+                    <input type="date" name="date" required value={date} onChange={e => setDate(e.target.value)} className="w-full" />
                 </div>
                 <div>
                     <label>Meal Type</label>
-                    <select value={mealType} onChange={e => setMealType(e.target.value as MealType)} className="w-full">
+                    <select name="meal_type" value={mealType} onChange={e => setMealType(e.target.value as MealType)} className="w-full">
                         <option value="Brunch">Brunch</option>
                         <option value="Dinner">Dinner</option>
                     </select>
                 </div>
                 <div>
                     <label>Volunteers</label>
-                    <input type="number" required min="0" value={volunteersCount} onChange={e => setVolunteersCount(e.target.value)} className="w-full" />
+                    <input type="number" name="volunteers_count" required min="0" value={volunteersCount} onChange={e => setVolunteersCount(e.target.value)} className="w-full" />
                 </div>
                 <div>
                     <label>Staff</label>
-                    <input type="number" required min="0" value={staffCount} onChange={e => setStaffCount(e.target.value)} className="w-full" />
+                    <input type="number" name="staff_count" required min="0" value={staffCount} onChange={e => setStaffCount(e.target.value)} className="w-full" />
                 </div>
             </div>
 
@@ -90,6 +82,7 @@ export default function DataEntryForm({ initialData, onSubmit, isEditing = false
                     <label>Food Item</label>
                     <input
                         type="text"
+                        name="food_item"
                         required
                         list="food-items-list"
                         value={foodItem}
@@ -103,11 +96,11 @@ export default function DataEntryForm({ initialData, onSubmit, isEditing = false
                 </div>
                 <div>
                     <label>Cooked Qty (kg/L)</label>
-                    <input type="number" step="0.01" required min="0" value={cookedQty} onChange={e => setCookedQty(e.target.value)} className="w-full" />
+                    <input type="number" name="cooked_qty" step="0.01" required min="0" value={cookedQty} onChange={e => setCookedQty(e.target.value)} className="w-full" />
                 </div>
                 <div>
                     <label>Returned Qty (kg/L)</label>
-                    <input type="number" step="0.01" required min="0" value={returnedQty} onChange={e => setReturnedQty(e.target.value)} className="w-full" />
+                    <input type="number" name="returned_qty" step="0.01" required min="0" value={returnedQty} onChange={e => setReturnedQty(e.target.value)} className="w-full" />
                 </div>
             </div>
 
@@ -125,7 +118,7 @@ export default function DataEntryForm({ initialData, onSubmit, isEditing = false
 
             <div>
                 <label>Remarks (Optional)</label>
-                <input type="text" value={remarks} onChange={e => setRemarks(e.target.value)} className="w-full" placeholder="Add any notes..." />
+                <input type="text" name="remarks" value={remarks} onChange={e => setRemarks(e.target.value)} className="w-full" placeholder="Add any notes..." />
             </div>
 
             <button type="submit" disabled={loading} className="primary-btn mt-4 flex items-center justify-center gap-2 w-full md:w-auto self-start">
