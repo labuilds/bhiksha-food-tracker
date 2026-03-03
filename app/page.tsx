@@ -31,12 +31,12 @@ export default function Home() {
             </section>
 
             <section className="pt-2">
-                <div className="flex gap-2 mb-6 p-1 bg-gray-900/50 backdrop-blur border border-gray-800 rounded-lg w-fit">
+                <div className="flex gap-2 mb-6 p-1 bg-stone-50 border border-stone-200 rounded-lg w-fit">
                     <button
                         onClick={() => setActiveTab("dashboard")}
                         className={`px-5 py-2.5 font-medium text-sm rounded-md transition-all duration-300 ${activeTab === "dashboard"
-                            ? "bg-blue-600 shadow-lg shadow-blue-500/30 text-white"
-                            : "text-gray-400 hover:text-gray-200 hover:bg-gray-800/50"
+                            ? "bg-[#F36F21] shadow-md text-white"
+                            : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
                             }`}
                     >
                         Dashboard
@@ -44,8 +44,8 @@ export default function Home() {
                     <button
                         onClick={() => setActiveTab("search")}
                         className={`px-5 py-2.5 font-medium text-sm rounded-md transition-all duration-300 ${activeTab === "search"
-                            ? "bg-blue-600 shadow-lg shadow-blue-500/30 text-white"
-                            : "text-gray-400 hover:text-gray-200 hover:bg-gray-800/50"
+                            ? "bg-[#F36F21] shadow-md text-white"
+                            : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
                             }`}
                     >
                         Item Analysis

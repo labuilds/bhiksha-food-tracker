@@ -50,34 +50,34 @@ export default function Navbar() {
     }, [isOnline]);
 
     return (
-        <nav className="fixed w-full bg-gray-900/60 backdrop-blur-xl border-b border-gray-800 top-0 z-40 transition-all duration-300">
+        <nav className="fixed w-full bg-white border-b border-stone-200 top-0 z-40 transition-all duration-300">
             <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.5)] flex items-center justify-center text-white font-bold text-xl tracking-tight">
+                    <div className="w-10 h-10 bg-[#F36F21] rounded-xl flex items-center justify-center text-white font-bold text-xl tracking-tight">
                         B
                     </div>
-                    <h1 className="font-bold text-xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-100 to-white hidden sm:block drop-shadow-sm">Bhiksha Hall Food Tracker</h1>
+                    <h1 className="font-bold text-xl tracking-tight text-stone-800 hidden sm:block">Bhiksha Hall Food Tracker</h1>
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-300 hidden md:flex">
+                    <div className="flex items-center gap-2 text-sm text-stone-600 hidden md:flex">
                         {isOnline ? (
-                            <span className="flex items-center gap-1.5 text-blue-400 bg-blue-900/30 border border-blue-500/30 px-2.5 py-1 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.2)]">
+                            <span className="flex items-center gap-1.5 text-orange-600 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-full">
                                 <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
                                 </span>
                                 Online
                             </span>
                         ) : (
-                            <span className="flex items-center gap-1.5 text-orange-400 bg-orange-900/30 border border-orange-500/30 px-2.5 py-1 rounded-full">
+                            <span className="flex items-center gap-1.5 text-stone-500 bg-stone-100 border border-stone-200 px-2.5 py-1 rounded-full">
                                 <CloudOff size={14} /> Offline Mode
                             </span>
                         )}
 
                         {lastSync && (
-                            <span className="text-xs ml-2 text-gray-400">
-                                Last synced: <span className="text-gray-300">{lastSync.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            <span className="text-xs ml-2 text-stone-500">
+                                Last synced: <span className="text-stone-700">{lastSync.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                             </span>
                         )}
                     </div>
@@ -86,8 +86,8 @@ export default function Navbar() {
                         onClick={triggerSync}
                         disabled={!isOnline || syncing}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${!isOnline
-                            ? "bg-gray-800/50 text-gray-500 cursor-not-allowed border border-gray-700/50"
-                            : "bg-gray-800 text-blue-400 hover:bg-gray-700 hover:text-blue-300 border border-gray-700 shadow-sm"
+                            ? "bg-stone-100 text-stone-400 cursor-not-allowed border border-stone-200"
+                            : "bg-white text-stone-700 hover:bg-stone-50 border border-stone-200 shadow-sm"
                             }`}
                     >
                         <RefreshCw size={16} className={syncing ? "animate-spin" : ""} />
@@ -96,7 +96,7 @@ export default function Navbar() {
 
                     <a
                         href="/api/download"
-                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg text-sm font-medium shadow-[0_0_15px_rgba(79,70,229,0.4)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(79,70,229,0.6)] hover:-translate-y-0.5"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#F36F21] hover:bg-[#D95E1A] text-white rounded-lg text-sm font-medium transition-all duration-300"
                     >
                         <Download size={16} />
                         <span className="hidden sm:inline">Export Data</span>

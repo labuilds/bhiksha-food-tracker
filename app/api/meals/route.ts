@@ -84,10 +84,14 @@ export async function POST(request: Request) {
             sync_status: false,
         }]).select().single();
 
-        if (error) throw error;
+        if (error) {
+            console.error("Supabase POST Error (Detailed):", JSON.stringify(error, null, 2));
+            throw error;
+        }
 
         return NextResponse.json(meal, { status: 201 });
     } catch (error) {
-        return NextResponse.json({ error: 'Failed to create meal entry' }, { status: 500 });
+        console.error("Supabase POST Catch Error:", error);
+        return NextResponse.json({ error: 'Failed to create meal entry', details: error }, { status: 500 });
     }
 }

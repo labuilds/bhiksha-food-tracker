@@ -61,7 +61,7 @@ export default function DataEntryForm({ initialData, onSubmit, isEditing = false
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-            <h2 className="text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 mb-2">{isEditing ? "Edit Meal Entry" : "New Meal Entry"}</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-stone-800 mb-2">{isEditing ? "Edit Meal Entry" : "New Meal Entry"}</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
@@ -111,15 +111,15 @@ export default function DataEntryForm({ initialData, onSubmit, isEditing = false
                 </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur border border-gray-700/50 p-5 rounded-xl flex flex-wrap gap-8 items-center shadow-inner">
+            <div className="bg-stone-50 border border-stone-200 p-5 rounded-xl flex flex-wrap gap-8 items-center">
                 <div>
-                    <span className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Consumed Qty</span>
-                    <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">{consumedQty.toFixed(2)}</span>
+                    <span className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Consumed Qty</span>
+                    <span className="text-3xl font-bold text-emerald-600">{consumedQty.toFixed(2)}</span>
                 </div>
-                <div className="h-10 w-px bg-gray-700 hidden sm:block"></div>
+                <div className="h-10 w-px bg-stone-200 hidden sm:block"></div>
                 <div>
-                    <span className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Per Person</span>
-                    <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-600">{perPersonQty.toFixed(3)}</span>
+                    <span className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Per Person</span>
+                    <span className="text-3xl font-bold text-blue-600">{perPersonQty.toFixed(3)}</span>
                 </div>
             </div>
 

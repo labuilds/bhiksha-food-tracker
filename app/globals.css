@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0b0f19;
-  --color-foreground: #f8fafc;
-  --color-card: #111827;
-  --color-card-border: #1f2937;
-  --color-primary: #3b82f6;
-  --color-primary-hover: #2563eb;
+  --color-background: #FDFBF7;
+  --color-foreground: #292524;
+  --color-card: #FFFFFF;
+  --color-card-border: #E7E5E4;
+  --color-primary: #F36F21;
+  --color-primary-hover: #D95E1A;
+  --color-muted: #78716C;
   --font-sans: "Inter", sans-serif;
 }
 
@@ -14,44 +15,43 @@
   :root {
     --background: theme('color.background');
     --foreground: theme('color.foreground');
+    color-scheme: light;
   }
 
   body {
     background-color: var(--background);
     color: var(--foreground);
     font-family: theme('font.sans');
-    background-image: radial-gradient(circle at top center, rgba(30, 58, 138, 0.1) 0%, rgba(11, 15, 25, 1) 100%);
-    background-attachment: fixed;
     min-height: 100vh;
   }
 
   input,
   select,
   textarea {
-    @apply bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 outline-none transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-100;
+    @apply bg-white border border-stone-200 rounded-lg px-4 py-2.5 outline-none transition-all duration-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-stone-800 placeholder-stone-400;
   }
 
   label {
-    @apply block text-sm font-medium text-gray-300 mb-1.5;
+    @apply block text-sm font-medium text-stone-600 mb-1.5;
   }
 
   table {
-    @apply w-full text-left border-collapse;
+    @apply w-full text-left border-collapse bg-white;
   }
 
   th {
-    @apply p-4 font-semibold text-xs tracking-wider uppercase text-gray-400 border-b border-gray-800 bg-gray-900/50;
+    @apply p-4 font-semibold text-xs tracking-wider uppercase text-stone-500 border-b border-stone-200 bg-stone-50;
   }
 
   td {
-    @apply p-4 border-b border-gray-800 text-sm;
+    @apply p-4 border-b border-stone-200 text-sm;
   }
 }
 
 .glass-panel {
-  @apply bg-gray-900/70 backdrop-blur-xl border border-gray-800 shadow-2xl rounded-2xl;
+  @apply bg-white border border-stone-200 shadow-sm rounded-2xl;
 }
 
 .primary-btn {
-  @apply bg-blue-600 hover:bg-blue-500 text-white font-medium px-5 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all duration-300 hover:shadow-blue-500/50 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:-translate-y-0 disabled:hover:shadow-blue-500/30;
+  @apply bg-[#F36F21] hover:bg-[#D95E1A] text-white font-medium px-5 py-2.5 rounded-lg shadow-sm transition-all duration-300 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed;
 }
