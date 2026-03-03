@@ -1,34 +1,39 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { supabase } from '@/lib/supabase';
 import * as XLSX from 'xlsx';
 
 export async function POST() {
     try {
         // Find unsynced records
-        const unsyncedMeals = await prisma.mealEntry.findMany({
-            where: { syncStatus: false },
-            select: { id: true }
-        });
+        const { data: unsyncedMeals, error: unsyncedError } = await supabase
+            .from('meal_entries')
+            .select('id')
+            .eq('sync_status', false);
 
-        if (unsyncedMeals.length === 0) {
+        if (unsyncedError) throw unsyncedError;
+
+        if (!unsyncedMeals || unsyncedMeals.length === 0) {
             return NextResponse.json({ message: 'Already synced', count: 0 });
         }
 
         // Query all records for complete Excel file
-        const allMeals = await prisma.mealEntry.findMany({
-            orderBy: { date: 'desc' },
-        });
+        const { data: allMeals, error: allMealsError } = await supabase
+            .from('meal_entries')
+            .select('*')
+            .order('date', { ascending: false });
+
+        if (allMealsError) throw allMealsError;
 
         const worksheetData = allMeals.map((meal: any) => ({
-            Date: meal.date.toISOString().split('T')[0],
-            'Meal Type': meal.mealType,
-            'Food Item': meal.foodItem,
-            'Volunteers Count': meal.volunteersCount,
-            'Staff Count': meal.staffCount,
-            'Cooked Qty': meal.cookedQty,
-            'Returned Qty': meal.returnedQty,
-            'Consumed Qty': meal.consumedQty,
-            'Per Person Qty': meal.perPersonQty.toFixed(2),
+            Date: meal.date,
+            'Meal Type': meal.meal_type,
+            'Food Item': meal.food_item,
+            'Volunteers Count': meal.volunteers_count,
+            'Staff Count': meal.staff_count,
+            'Cooked Qty': meal.cooked_qty,
+            'Returned Qty': meal.returned_qty,
+            'Consumed Qty': meal.consumed_qty,
+            'Per Person Qty': Number(meal.per_person_qty).toFixed(2),
             Remarks: meal.remarks || '',
         }));
 
@@ -44,10 +49,12 @@ export async function POST() {
 
         // Mark as synced
         const unsyncedIds = unsyncedMeals.map((m: any) => m.id);
-        await prisma.mealEntry.updateMany({
-            where: { id: { in: unsyncedIds } },
-            data: { syncStatus: true }
-        });
+        const { error: updateError } = await supabase
+            .from('meal_entries')
+            .update({ sync_status: true })
+            .in('id', unsyncedIds);
+
+        if (updateError) throw updateError;
 
         return NextResponse.json({ success: true, count: unsyncedIds.length });
     } catch (error) {

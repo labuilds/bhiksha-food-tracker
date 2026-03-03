@@ -1,23 +1,26 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { supabase } from '@/lib/supabase';
 import * as XLSX from 'xlsx';
 
 export async function GET() {
     try {
-        const meals = await prisma.mealEntry.findMany({
-            orderBy: { date: 'desc' },
-        });
+        const { data: meals, error } = await supabase
+            .from('meal_entries')
+            .select('*')
+            .order('date', { ascending: false });
 
-        const worksheetData = meals.map((meal) => ({
-            Date: meal.date.toISOString().split('T')[0],
-            'Meal Type': meal.mealType,
-            'Food Item': meal.foodItem,
-            'Volunteers Count': meal.volunteersCount,
-            'Staff Count': meal.staffCount,
-            'Cooked Qty': meal.cookedQty,
-            'Returned Qty': meal.returnedQty,
-            'Consumed Qty': meal.consumedQty,
-            'Per Person Qty': meal.perPersonQty.toFixed(2),
+        if (error) throw error;
+
+        const worksheetData = meals.map((meal: any) => ({
+            Date: meal.date,
+            'Meal Type': meal.meal_type,
+            'Food Item': meal.food_item,
+            'Volunteers Count': meal.volunteers_count,
+            'Staff Count': meal.staff_count,
+            'Cooked Qty': meal.cooked_qty,
+            'Returned Qty': meal.returned_qty,
+            'Consumed Qty': meal.consumed_qty,
+            'Per Person Qty': Number(meal.per_person_qty).toFixed(2),
             Remarks: meal.remarks || '',
         }));
 
@@ -34,6 +37,7 @@ export async function GET() {
             },
         });
     } catch (error) {
+        console.error("Supabase GET Download Error:", error);
         return NextResponse.json({ error: 'Failed to generate Excel file' }, { status: 500 });
     }
 }
