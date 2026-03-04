@@ -1,21 +1,45 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 import * as XLSX from 'xlsx';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
     try {
-        const { data: meals, error } = await supabase
-            .from('meal_entries')
-            .select('*')
-            .order('date', { ascending: false });
+        const supabase = await createClient();
+        const PAGE_SIZE = 1000;
+        let allData: any[] = [];
+        let hasMore = true;
+        let page = 0;
 
-        if (error) throw error;
+        while (hasMore) {
+            const { data, error } = await supabase
+                .from('meal_entries')
+                .select('*')
+                .order('date', { ascending: false })
+                .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                allData = allData.concat(data);
+                if (data.length < PAGE_SIZE) {
+                    hasMore = false;
+                } else {
+                    page++;
+                }
+            } else {
+                hasMore = false;
+            }
+        }
+
+        const liveData = allData;
 
         const worksheetData: any[] = [];
         let previousDate: string | null = null;
         let previousMealType: string | null = null;
 
-        meals.forEach((meal: any) => {
+        liveData.forEach((meal: any) => {
             if (previousDate && (previousDate !== meal.date || previousMealType !== meal.meal_type)) {
                 worksheetData.push({}); // Empty row separator
             }
@@ -62,10 +86,11 @@ export async function GET() {
             headers: {
                 'Content-Disposition': 'attachment; filename="bhiksha_data.xlsx"',
                 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
             },
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error("Supabase GET Download Error:", error);
-        return NextResponse.json({ error: 'Failed to generate Excel file' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to generate Excel file', details: error?.message || String(error) }, { status: 500 });
     }
 }

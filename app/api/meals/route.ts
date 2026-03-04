@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const dateStr = searchParams.get('date');
@@ -43,7 +45,11 @@ export async function GET(request: Request) {
             syncStatus: meal.sync_status
         }));
 
-        return NextResponse.json(mappedMeals);
+        return NextResponse.json(mappedMeals, {
+            headers: {
+                'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+            }
+        });
     } catch (error) {
         console.error("Supabase GET Error:", error);
         return NextResponse.json({ error: 'Failed to fetch meals' }, { status: 500 });

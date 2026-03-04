@@ -16,8 +16,8 @@ export default function MealView({ initialMeals }: { initialMeals: any[] }) {
     const [editingMeal, setEditingMeal] = useState<any | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
-    const fetchMeals = async () => {
-        setLoading(true);
+    const fetchMeals = async (silent = false) => {
+        if (!silent) setLoading(true);
         try {
             const params = new URLSearchParams();
             if (filterDate) params.append("date", filterDate);
@@ -29,16 +29,17 @@ export default function MealView({ initialMeals }: { initialMeals: any[] }) {
         } catch (error) {
             console.error(error);
         }
-        setLoading(false);
+        if (!silent) setLoading(false);
     };
 
     useEffect(() => {
         if (filterDate || filterMealType) {
-            fetchMeals();
+            fetchMeals(false);
         } else {
-            setMeals(initialMeals || []);
-            setLoading(false);
+            // Fetch silently on mount to refresh PWA-cached stale HTML
+            fetchMeals(true);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filterDate, filterMealType, initialMeals]);
 
     const handleEditSave = async (data: any) => {
