@@ -11,20 +11,48 @@ export async function GET() {
 
         if (error) throw error;
 
-        const worksheetData = meals.map((meal: any) => ({
-            Date: meal.date,
-            'Meal Type': meal.meal_type,
-            'Food Item': meal.food_item,
-            'Volunteers Count': meal.volunteers_count,
-            'Staff Count': meal.staff_count,
-            'Cooked Qty': meal.cooked_qty,
-            'Returned Qty': meal.returned_qty,
-            'Consumed Qty': meal.consumed_qty,
-            'Per Person Qty': Number(meal.per_person_qty).toFixed(2),
-            Remarks: meal.remarks || '',
-        }));
+        const worksheetData: any[] = [];
+        let previousDate: string | null = null;
+        let previousMealType: string | null = null;
+
+        meals.forEach((meal: any) => {
+            if (previousDate && (previousDate !== meal.date || previousMealType !== meal.meal_type)) {
+                worksheetData.push({}); // Empty row separator
+            }
+
+            worksheetData.push({
+                'Date': meal.date,
+                'Meal Type': meal.meal_type,
+                'Food Item': meal.food_item,
+                'Volunteers Count': meal.volunteers_count,
+                'Staff Count': meal.staff_count,
+                'Cooked Qty': meal.cooked_qty,
+                'Returned Qty': meal.returned_qty,
+                'Consumed Qty': meal.consumed_qty,
+                'Per Person Qty': Number(meal.per_person_qty).toFixed(2),
+                'Remarks': meal.remarks || '',
+            });
+
+            previousDate = meal.date;
+            previousMealType = meal.meal_type;
+        });
 
         const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+
+        // Define column formatting
+        worksheet['!cols'] = [
+            { wch: 12 }, // Date
+            { wch: 12 }, // Meal Type
+            { wch: 35 }, // Food Item
+            { wch: 16 }, // Volunteers
+            { wch: 12 }, // Staff
+            { wch: 12 }, // Cooked
+            { wch: 12 }, // Returned
+            { wch: 14 }, // Consumed
+            { wch: 16 }, // Per Person
+            { wch: 50 }, // Remarks
+        ];
+
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Meals');
 

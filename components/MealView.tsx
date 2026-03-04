@@ -94,34 +94,36 @@ export default function MealView({ initialMeals }: { initialMeals: any[] }) {
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Meal</th>
-                            <th>Food Item</th>
-                            <th>Cooked</th>
-                            <th>Returned</th>
-                            <th>Consumed</th>
-                            <th>Actions</th>
+                            <th className="whitespace-nowrap">Date</th>
+                            <th className="whitespace-nowrap">Meal</th>
+                            <th className="whitespace-nowrap">Food Item</th>
+                            <th className="whitespace-nowrap">Cooked</th>
+                            <th className="whitespace-nowrap">Returned</th>
+                            <th className="whitespace-nowrap">Consumed</th>
+                            <th className="whitespace-nowrap">Per Person</th>
+                            <th className="whitespace-nowrap">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan={7} className="p-4 text-center text-gray-500">Loading...</td></tr>
+                            <tr><td colSpan={8} className="p-4 text-center text-gray-500">Loading...</td></tr>
                         ) : meals.length === 0 ? (
-                            <tr><td colSpan={7} className="p-4 text-center text-gray-500">No entries found</td></tr>
+                            <tr><td colSpan={8} className="p-4 text-center text-gray-500">No entries found</td></tr>
                         ) : (
                             meals.map(meal => (
                                 <tr key={meal.id} className="border-b border-stone-200 hover:bg-stone-50 transition-colors flex-none">
-                                    <td className="p-4 text-sm text-stone-600">{new Date(meal.date).toLocaleDateString()}</td>
-                                    <td className="p-4 text-sm text-stone-600">
+                                    <td className="p-4 text-sm text-stone-600 whitespace-nowrap">{new Date(meal.date).toLocaleDateString()}</td>
+                                    <td className="p-4 text-sm text-stone-600 whitespace-nowrap">
                                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${meal.mealType === 'Brunch' ? 'bg-orange-50 text-orange-600 border border-orange-200' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
                                             {meal.mealType}
                                         </span>
                                     </td>
-                                    <td className="p-4 text-sm font-medium text-stone-800">{meal.foodItem}</td>
-                                    <td className="p-4 text-sm text-stone-600">{meal.cookedQty}</td>
-                                    <td className="p-4 text-sm text-stone-600">{meal.returnedQty}</td>
-                                    <td className="p-4 text-sm text-emerald-600 font-bold">{meal.consumedQty}</td>
-                                    <td className="p-4">
+                                    <td className="p-4 text-sm font-medium text-stone-800 whitespace-nowrap">{meal.foodItem}</td>
+                                    <td className="p-4 text-sm text-stone-600 whitespace-nowrap">{meal.cookedQty}</td>
+                                    <td className="p-4 text-sm text-stone-600 whitespace-nowrap">{meal.returnedQty}</td>
+                                    <td className="p-4 text-sm text-emerald-600 font-bold whitespace-nowrap">{meal.consumedQty}</td>
+                                    <td className="p-4 text-sm text-blue-600 font-medium whitespace-nowrap">{Number(meal.perPersonQty || 0).toFixed(3)}</td>
+                                    <td className="p-4 whitespace-nowrap">
                                         <div className="flex gap-2">
                                             <button onClick={() => setEditingMeal(meal)} className="p-2 text-stone-500 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-all duration-200">
                                                 <Edit2 size={16} />

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CloudOff, CloudUpload, Download, RefreshCw } from "lucide-react";
+import { CloudOff, CloudUpload, Download, RefreshCw, Lock } from "lucide-react";
 import { processOfflineQueue } from "@/lib/sync";
+import { logout } from "@/app/actions/auth";
 
 export default function Navbar() {
     const [isOnline, setIsOnline] = useState(true);
@@ -101,6 +102,17 @@ export default function Navbar() {
                         <Download size={16} />
                         <span className="hidden sm:inline">Export Data</span>
                     </a>
+
+                    <form action={logout}>
+                        <button
+                            type="submit"
+                            title="Lock App"
+                            className="flex items-center gap-2 px-3 py-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg text-sm font-medium border border-transparent hover:border-stone-200 transition-all duration-300 ml-1"
+                        >
+                            <Lock size={16} />
+                            <span className="hidden lg:inline text-xs font-semibold uppercase tracking-wider">Lock</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </nav>

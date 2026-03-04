@@ -55,3 +55,34 @@
 .primary-btn {
   @apply bg-[#F36F21] hover:bg-[#D95E1A] text-white font-medium px-5 py-2.5 rounded-lg shadow-sm transition-all duration-300 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed;
 }
+
+@keyframes bobblehead {
+  0%, 100% {
+    transform: rotate(-3deg) translateY(0);
+  }
+  50% {
+    transform: rotate(3deg) translateY(-8px);
+  }
+}
+
+@keyframes bounce-reaction {
+  0% {
+    transform: rotate(0deg) scale(1) translateY(0);
+  }
+  50% {
+    transform: rotate(5deg) scale(1.05) translateY(-12px);
+  }
+  100% {
+    transform: rotate(0deg) scale(1) translateY(0);
+  }
+}
+
+.animate-bobblehead {
+  animation: bobblehead 3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.animate-bounce-reaction {
+  animation: bounce-reaction 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: bottom center;
+}

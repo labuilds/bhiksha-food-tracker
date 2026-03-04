@@ -71,20 +71,22 @@ export default function ItemSearch() {
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr>
-                            <th className="w-10"></th>
-                            <th>Date</th>
-                            <th>Meal</th>
-                            <th>Food Item</th>
-                            <th>Cooked</th>
-                            <th>Consumed</th>
-                            <th>Remarks</th>
+                            <th className="w-10 whitespace-nowrap"></th>
+                            <th className="whitespace-nowrap">Date</th>
+                            <th className="whitespace-nowrap">Meal</th>
+                            <th className="whitespace-nowrap">Food Item</th>
+                            <th className="whitespace-nowrap">Cooked</th>
+                            <th className="whitespace-nowrap">Returned</th>
+                            <th className="whitespace-nowrap">Consumed</th>
+                            <th className="whitespace-nowrap">Per Person</th>
+                            <th className="whitespace-nowrap">Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan={7} className="p-4 text-center text-gray-500">Searching...</td></tr>
+                            <tr><td colSpan={9} className="p-4 text-center text-gray-500">Searching...</td></tr>
                         ) : meals.length === 0 ? (
-                            <tr><td colSpan={7} className="p-4 text-center text-gray-500">No items found</td></tr>
+                            <tr><td colSpan={9} className="p-4 text-center text-gray-500">No items found</td></tr>
                         ) : (
                             meals.map(meal => (
                                 <React.Fragment key={meal.id}>
@@ -92,24 +94,26 @@ export default function ItemSearch() {
                                         onClick={() => handleExpand(meal)}
                                         className={`border-b border-stone-200 hover:bg-stone-50 transition-colors cursor-pointer ${expandedRow === meal.id ? 'bg-stone-100' : ''}`}
                                     >
-                                        <td className="p-4">
+                                        <td className="p-4 whitespace-nowrap">
                                             {expandedRow === meal.id ? <ChevronDown size={18} className="text-orange-500" /> : <ChevronRight size={18} className="text-stone-400" />}
                                         </td>
-                                        <td className="p-4 text-sm text-stone-600">{new Date(meal.date).toLocaleDateString()}</td>
-                                        <td className="p-4 text-sm text-stone-600">
+                                        <td className="p-4 text-sm text-stone-600 whitespace-nowrap">{new Date(meal.date).toLocaleDateString()}</td>
+                                        <td className="p-4 text-sm text-stone-600 whitespace-nowrap">
                                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${meal.mealType === 'Brunch' ? 'bg-orange-50 text-orange-600 border border-orange-200' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
                                                 {meal.mealType}
                                             </span>
                                         </td>
-                                        <td className="p-4 text-sm font-semibold text-stone-800">{meal.foodItem}</td>
-                                        <td className="p-4 text-sm text-stone-600">{meal.cookedQty}</td>
-                                        <td className="p-4 text-sm font-bold text-emerald-600">{meal.consumedQty}</td>
+                                        <td className="p-4 text-sm font-semibold text-stone-800 whitespace-nowrap">{meal.foodItem}</td>
+                                        <td className="p-4 text-sm text-stone-600 whitespace-nowrap">{meal.cookedQty}</td>
+                                        <td className="p-4 text-sm text-stone-600 whitespace-nowrap">{meal.returnedQty}</td>
+                                        <td className="p-4 text-sm font-bold text-emerald-600 whitespace-nowrap">{meal.consumedQty}</td>
+                                        <td className="p-4 text-sm font-medium text-blue-600 whitespace-nowrap">{Number(meal.perPersonQty || 0).toFixed(3)}</td>
                                         <td className="p-4 text-sm text-stone-500 max-w-[150px] truncate">{meal.remarks}</td>
                                     </tr>
 
                                     {expandedRow === meal.id && (
                                         <tr className="bg-stone-50 border-b border-stone-200">
-                                            <td colSpan={7} className="p-6">
+                                            <td colSpan={9} className="p-6">
                                                 <div className="pl-8 border-l-2 border-orange-200 ml-4 py-2">
                                                     <h4 className="text-sm font-medium text-stone-500 mb-4 flex items-center gap-2">
                                                         <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
@@ -123,25 +127,25 @@ export default function ItemSearch() {
                                                             <table className="w-full text-left">
                                                                 <thead className="bg-stone-50 border-b border-stone-200">
                                                                     <tr className="text-xs text-stone-500 uppercase tracking-wider">
-                                                                        <th className="p-3 pl-5 font-medium">Food Item</th>
-                                                                        <th className="p-3 font-medium">Cooked</th>
-                                                                        <th className="p-3 font-medium">Returned</th>
-                                                                        <th className="p-3 font-medium">Consumed</th>
-                                                                        <th className="p-3 font-medium text-right pr-5">Per Person</th>
+                                                                        <th className="p-3 pl-5 font-medium whitespace-nowrap">Food Item</th>
+                                                                        <th className="p-3 font-medium whitespace-nowrap">Cooked</th>
+                                                                        <th className="p-3 font-medium whitespace-nowrap">Returned</th>
+                                                                        <th className="p-3 font-medium whitespace-nowrap">Consumed</th>
+                                                                        <th className="p-3 font-medium text-right pr-5 whitespace-nowrap">Per Person</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody className="divide-y divide-stone-200">
                                                                     {subTableData.map(subItem => (
                                                                         <tr key={subItem.id} className={`text-sm hover:bg-stone-50 transition-colors ${subItem.id === meal.id ? 'bg-orange-50/50' : ''}`}>
-                                                                            <td className="p-3 pl-5 font-medium text-stone-700 flex items-center gap-3 relative">
+                                                                            <td className="p-3 pl-5 font-medium text-stone-700 flex items-center gap-3 relative whitespace-nowrap">
                                                                                 {subItem.id === meal.id && <div className="absolute left-0 top-0 bottom-0 w-1 bg-orange-500"></div>}
                                                                                 {subItem.foodItem}
                                                                                 {subItem.id === meal.id && <span className="text-[10px] bg-orange-100 border border-orange-200 text-orange-600 px-2 py-0.5 rounded-full font-bold tracking-wider uppercase">Focus</span>}
                                                                             </td>
-                                                                            <td className="p-3 text-stone-600">{subItem.cookedQty}</td>
-                                                                            <td className="p-3 text-stone-600">{subItem.returnedQty}</td>
-                                                                            <td className="p-3 font-bold text-emerald-600">{subItem.consumedQty}</td>
-                                                                            <td className="p-3 text-stone-500 font-mono text-right pr-5">{subItem.perPersonQty.toFixed(3)}</td>
+                                                                            <td className="p-3 text-stone-600 whitespace-nowrap">{subItem.cookedQty}</td>
+                                                                            <td className="p-3 text-stone-600 whitespace-nowrap">{subItem.returnedQty}</td>
+                                                                            <td className="p-3 font-bold text-emerald-600 whitespace-nowrap">{subItem.consumedQty}</td>
+                                                                            <td className="p-3 text-stone-500 font-mono text-right pr-5 whitespace-nowrap">{subItem.perPersonQty.toFixed(3)}</td>
                                                                         </tr>
                                                                     ))}
                                                                 </tbody>

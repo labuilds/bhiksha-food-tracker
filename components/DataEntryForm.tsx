@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { CopyPlus, Send } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { CopyPlus, Send, Loader2, CheckCircle2 } from "lucide-react";
 
 type MealType = "Brunch" | "Dinner";
 
@@ -23,6 +23,19 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
 
     const [foodItemsList, setFoodItemsList] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     useEffect(() => {
         fetch("/api/food-items")
@@ -37,18 +50,28 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
 
     const handleAction = async (formData: FormData) => {
         setLoading(true);
-        if (action) {
-            await action(formData);
-        }
+        try {
+            if (action) {
+                await action(formData);
+            }
 
-        if (!isEditing) {
-            setFoodItem("");
-            setCookedQty("");
-            setReturnedQty("");
-            setRemarks("");
-            // Keep date, mealType, counts same for faster multi-item entry
+            if (!isEditing) {
+                setFoodItem("");
+                setCookedQty("");
+                setReturnedQty("");
+                setRemarks("");
+                // Keep date, mealType, counts same for faster multi-item entry
+
+                setShowSuccess(true);
+                setTimeout(() => {
+                    setShowSuccess(false);
+                }, 3000);
+            }
+        } catch (error) {
+            console.error("Error saving entry:", error);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     return (
@@ -78,21 +101,46 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="md:col-span-1">
+                <div className="md:col-span-1" ref={dropdownRef}>
                     <label>Food Item</label>
-                    <input
-                        type="text"
-                        name="food_item"
-                        required
-                        list="food-items-list"
-                        value={foodItem}
-                        onChange={e => setFoodItem(e.target.value)}
-                        className="w-full"
-                        placeholder="e.g. Rice, Dal"
-                    />
-                    <datalist id="food-items-list">
-                        {foodItemsList.map(item => <option key={item} value={item} />)}
-                    </datalist>
+                    <div className="relative">
+                        <input
+                            type="text"
+                            name="food_item"
+                            required
+                            value={foodItem}
+                            onChange={e => {
+                                setFoodItem(e.target.value);
+                                setIsDropdownOpen(true);
+                            }}
+                            onFocus={() => setIsDropdownOpen(true)}
+                            className="w-full"
+                            placeholder="e.g. Rice, Dal"
+                            autoComplete="off"
+                        />
+                        {isDropdownOpen && (
+                            <ul className="absolute z-10 w-full mt-1 max-h-60 overflow-auto bg-white border border-stone-200 rounded-lg shadow-lg">
+                                {foodItemsList.filter(item => item.toLowerCase().includes(foodItem.toLowerCase())).length === 0 ? (
+                                    <li className="p-3 text-sm text-stone-500">No items found</li>
+                                ) : (
+                                    foodItemsList
+                                        .filter(item => item.toLowerCase().includes(foodItem.toLowerCase()))
+                                        .map(item => (
+                                            <li
+                                                key={item}
+                                                className="p-3 text-sm hover:bg-stone-50 cursor-pointer"
+                                                onClick={() => {
+                                                    setFoodItem(item);
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                            >
+                                                {item}
+                                            </li>
+                                        ))
+                                )}
+                            </ul>
+                        )}
+                    </div>
                 </div>
                 <div>
                     <label>Cooked Qty (kg/L)</label>
@@ -121,10 +169,22 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
                 <input type="text" name="remarks" value={remarks} onChange={e => setRemarks(e.target.value)} className="w-full" placeholder="Add any notes..." />
             </div>
 
-            <button type="submit" disabled={loading} className="primary-btn mt-4 flex items-center justify-center gap-2 w-full md:w-auto self-start">
-                {isEditing ? <Send size={18} /> : <CopyPlus size={18} />}
+            <button type="submit" disabled={loading} className="primary-btn mt-4 flex items-center justify-center gap-2 w-full md:w-auto self-start disabled:opacity-70 disabled:cursor-not-allowed">
+                {loading ? <Loader2 size={18} className="animate-spin" /> : isEditing ? <Send size={18} /> : <CopyPlus size={18} />}
                 {loading ? "Saving..." : isEditing ? "Save Changes" : "Save Entry"}
             </button>
+
+            {/* Success Modal */}
+            {showSuccess && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 px-4">
+                    <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 border border-emerald-100 max-w-sm w-full transform transition-all">
+                        <div className="h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-2">
+                            <CheckCircle2 size={40} />
+                        </div>
+                        <h3 className="text-xl font-bold text-stone-800 text-center">Food Item Saved Successfully!</h3>
+                    </div>
+                </div>
+            )}
         </form>
     );
 }
