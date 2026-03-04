@@ -63,6 +63,7 @@ export default function ItemSearch() {
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                         className="w-full pl-12 pr-4 py-3 bg-white border border-stone-200 rounded-xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-stone-800 placeholder-stone-400 shadow-sm"
+                        suppressHydrationWarning
                     />
                 </div>
             </div>

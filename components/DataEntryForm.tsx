@@ -81,22 +81,22 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
                     <label>Date</label>
-                    <input type="date" name="date" required value={date} onChange={e => setDate(e.target.value)} className="w-full" />
+                    <input type="date" name="date" required value={date} onChange={e => setDate(e.target.value)} className="w-full" suppressHydrationWarning />
                 </div>
                 <div>
                     <label>Meal Type</label>
-                    <select name="meal_type" value={mealType} onChange={e => setMealType(e.target.value as MealType)} className="w-full">
+                    <select name="meal_type" value={mealType} onChange={e => setMealType(e.target.value as MealType)} className="w-full" suppressHydrationWarning>
                         <option value="Brunch">Brunch</option>
                         <option value="Dinner">Dinner</option>
                     </select>
                 </div>
                 <div>
                     <label>Volunteers</label>
-                    <input type="number" name="volunteers_count" required min="0" value={volunteersCount} onChange={e => setVolunteersCount(e.target.value)} className="w-full" />
+                    <input type="number" name="volunteers_count" required min="0" value={volunteersCount} onChange={e => setVolunteersCount(e.target.value)} className="w-full" suppressHydrationWarning />
                 </div>
                 <div>
                     <label>Staff</label>
-                    <input type="number" name="staff_count" required min="0" value={staffCount} onChange={e => setStaffCount(e.target.value)} className="w-full" />
+                    <input type="number" name="staff_count" required min="0" value={staffCount} onChange={e => setStaffCount(e.target.value)} className="w-full" suppressHydrationWarning />
                 </div>
             </div>
 
@@ -117,6 +117,7 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
                             className="w-full"
                             placeholder="e.g. Rice, Dal"
                             autoComplete="off"
+                            suppressHydrationWarning
                         />
                         {isDropdownOpen && (
                             <ul className="absolute z-10 w-full mt-1 max-h-60 overflow-auto bg-white border border-stone-200 rounded-lg shadow-lg">
@@ -144,11 +145,11 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
                 </div>
                 <div>
                     <label>Cooked Qty (kg/L)</label>
-                    <input type="number" name="cooked_qty" step="0.01" required min="0" value={cookedQty} onChange={e => setCookedQty(e.target.value)} className="w-full" />
+                    <input type="number" name="cooked_qty" step="0.01" required min="0" value={cookedQty} onChange={e => setCookedQty(e.target.value)} className="w-full" suppressHydrationWarning />
                 </div>
                 <div>
                     <label>Returned Qty (kg/L)</label>
-                    <input type="number" name="returned_qty" step="0.01" required min="0" value={returnedQty} onChange={e => setReturnedQty(e.target.value)} className="w-full" />
+                    <input type="number" name="returned_qty" step="0.01" required min="0" value={returnedQty} onChange={e => setReturnedQty(e.target.value)} className="w-full" suppressHydrationWarning />
                 </div>
             </div>
 
@@ -166,7 +167,7 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
 
             <div>
                 <label>Remarks (Optional)</label>
-                <input type="text" name="remarks" value={remarks} onChange={e => setRemarks(e.target.value)} className="w-full" placeholder="Add any notes..." />
+                <input type="text" name="remarks" value={remarks} onChange={e => setRemarks(e.target.value)} className="w-full" placeholder="Add any notes..." suppressHydrationWarning />
             </div>
 
             <button type="submit" disabled={loading} className="primary-btn mt-4 flex items-center justify-center gap-2 w-full md:w-auto self-start disabled:opacity-70 disabled:cursor-not-allowed">

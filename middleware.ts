@@ -10,8 +10,11 @@ export function middleware(request: NextRequest) {
         pathname.startsWith('/_next') ||
         pathname.startsWith('/api') ||
         pathname === '/login' ||
-        pathname === '/manifest.ts' ||
-        pathname.match(/\.(png|svg|ico|jpg|jpeg)$/)
+        pathname === '/manifest.webmanifest' ||
+        pathname === '/manifest.json' ||
+        pathname === '/sw.js' ||
+        pathname.startsWith('/workbox-') ||
+        pathname.match(/\.(png|svg|ico|jpg|jpeg|webmanifest)$/)
     ) {
         return NextResponse.next()
     }

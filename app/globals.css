@@ -28,7 +28,7 @@
   input,
   select,
   textarea {
-    @apply bg-white border border-stone-200 rounded-lg px-4 py-2.5 outline-none transition-all duration-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-stone-800 placeholder-stone-400;
+    @apply bg-white border border-stone-200 rounded-lg px-4 py-2.5 outline-none transition-all duration-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-stone-800 placeholder-stone-400 min-h-[44px];
   }
 
   label {
@@ -53,13 +53,16 @@
 }
 
 .primary-btn {
-  @apply bg-[#F36F21] hover:bg-[#D95E1A] text-white font-medium px-5 py-2.5 rounded-lg shadow-sm transition-all duration-300 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply bg-[#F36F21] hover:bg-[#D95E1A] text-white font-medium px-5 py-2.5 rounded-lg shadow-sm transition-all duration-300 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px];
 }
 
 @keyframes bobblehead {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: rotate(-3deg) translateY(0);
   }
+
   50% {
     transform: rotate(3deg) translateY(-8px);
   }
@@ -69,9 +72,11 @@
   0% {
     transform: rotate(0deg) scale(1) translateY(0);
   }
+
   50% {
     transform: rotate(5deg) scale(1.05) translateY(-12px);
   }
+
   100% {
     transform: rotate(0deg) scale(1) translateY(0);
   }

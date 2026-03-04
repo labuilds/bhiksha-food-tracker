@@ -77,11 +77,13 @@ export default function MealView({ initialMeals }: { initialMeals: any[] }) {
                         value={filterDate}
                         onChange={e => setFilterDate(e.target.value)}
                         className="w-auto"
+                        suppressHydrationWarning
                     />
                     <select
                         value={filterMealType}
                         onChange={e => setFilterMealType(e.target.value)}
                         className="w-auto"
+                        suppressHydrationWarning
                     >
                         <option value="">All Meals</option>
                         <option value="Brunch">Brunch</option>

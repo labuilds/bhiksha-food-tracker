@@ -67,6 +67,7 @@ export default function LoginPage() {
                             placeholder="Enter Passcode..."
                             className="w-full text-center tracking-widest text-lg font-bold"
                             required
+                            suppressHydrationWarning
                         />
                     </div>
 
