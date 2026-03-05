@@ -17,6 +17,7 @@ export async function GET() {
                 .from('meal_entries')
                 .select('*')
                 .order('date', { ascending: false })
+                .order('created_at', { ascending: true })
                 .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
             if (error) throw error;
@@ -44,8 +45,14 @@ export async function GET() {
                 worksheetData.push({}); // Empty row separator
             }
 
+            let formattedDate = meal.date;
+            if (meal.date && meal.date.includes('-')) {
+                const [year, month, day] = meal.date.split('-');
+                formattedDate = `${day}/${month}/${year}`;
+            }
+
             worksheetData.push({
-                'Date': meal.date,
+                'Date': formattedDate,
                 'Meal Type': meal.meal_type,
                 'Food Item': meal.food_item,
                 'Volunteers Count': meal.volunteers_count,

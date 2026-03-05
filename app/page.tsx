@@ -10,7 +10,7 @@ export default async function Home() {
         .from('meal_entries')
         .select('*')
         .order('date', { ascending: false })
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: true })
         .limit(20);
 
     if (error) {

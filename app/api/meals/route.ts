@@ -9,7 +9,11 @@ export async function GET(request: Request) {
     const mealType = searchParams.get('mealType');
     const foodItem = searchParams.get('foodItem');
 
-    let query = supabase.from('meal_entries').select('*').order('date', { ascending: false });
+    let query = supabase
+        .from('meal_entries')
+        .select('*')
+        .order('date', { ascending: false })
+        .order('created_at', { ascending: true });
 
     if (dateStr) {
         // Match exact date using postgres date format YYYY-MM-DD

@@ -48,9 +48,20 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
     const totalPeople = (parseInt(volunteersCount) || 0) + (parseInt(staffCount) || 0);
     const perPersonQty = totalPeople > 0 ? (consumedQty / totalPeople) : 0;
 
-    const handleAction = async (formData: FormData) => {
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
         setLoading(true);
         try {
+            const formData = new FormData();
+            formData.append("date", date);
+            formData.append("meal_type", mealType);
+            formData.append("volunteers_count", volunteersCount);
+            formData.append("staff_count", staffCount);
+            formData.append("food_item", foodItem);
+            formData.append("cooked_qty", cookedQty);
+            formData.append("returned_qty", returnedQty);
+            formData.append("remarks", remarks);
+
             if (action) {
                 await action(formData);
             }
@@ -75,7 +86,7 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
     };
 
     return (
-        <form action={handleAction} className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <h2 className="text-2xl font-bold tracking-tight text-stone-800 mb-2">{isEditing ? "Edit Meal Entry" : "New Meal Entry"}</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -175,15 +186,11 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
                 {loading ? "Saving..." : isEditing ? "Save Changes" : "Save Entry"}
             </button>
 
-            {/* Success Modal */}
+            {/* Success Toast */}
             {showSuccess && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 px-4">
-                    <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 border border-emerald-100 max-w-sm w-full transform transition-all">
-                        <div className="h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-2">
-                            <CheckCircle2 size={40} />
-                        </div>
-                        <h3 className="text-xl font-bold text-stone-800 text-center">Food Item Saved Successfully!</h3>
-                    </div>
+                <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-50 border border-green-200 text-green-800 shadow-sm rounded-md px-4 py-3 flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <CheckCircle2 size={18} className="text-green-600" />
+                    <span className="text-sm font-medium">Food Item Saved Successfully</span>
                 </div>
             )}
         </form>
