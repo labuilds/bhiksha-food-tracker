@@ -26,7 +26,7 @@ export default function BottomNavbar() {
     ];
 
     return (
-        <nav className="fixed bottom-0 w-full bg-white border-t border-stone-200 z-50 pb-safe">
+        <nav className="fixed bottom-6 left-4 right-4 bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-stone-200/50 z-50">
             <div className="flex items-center justify-around h-16 max-w-md mx-auto">
                 {tabs.map((tab) => {
                     const isActive = pathname === tab.path;

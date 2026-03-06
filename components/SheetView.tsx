@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Edit2, Trash2 } from "lucide-react";
-import EditModal from "./EditModal";
+import { Trash2 } from "lucide-react";
 import DeleteConfirm from "./DeleteConfirm";
 import { offlineFetch } from "@/lib/api";
 import { updateSpecificMetric } from "@/app/actions/meals";
@@ -21,7 +20,6 @@ export default function SheetView() {
 
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const [editingMeal, setEditingMeal] = useState<any | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
     // Initialize from localStorage
@@ -131,21 +129,6 @@ export default function SheetView() {
             handleInlineSave();
         } else if (e.key === 'Escape') {
             setEditingCell(null);
-        }
-    };
-
-    const handleEditSave = async (data: any) => {
-        if (!editingMeal) return;
-        try {
-            await offlineFetch(`/api/meals/${editingMeal.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            });
-            setEditingMeal(null);
-            fetchMeals(true);
-        } catch (error) {
-            console.error(error);
         }
     };
 
@@ -284,9 +267,6 @@ export default function SheetView() {
                                     <td className="p-3 text-sm text-blue-600 font-medium whitespace-nowrap">{Number(meal.perPersonQty || 0).toFixed(3)}</td>
                                     <td className="p-3 whitespace-nowrap text-right">
                                         <div className="flex justify-end gap-1">
-                                            <button onClick={() => setEditingMeal(meal)} className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded transition-all">
-                                                <Edit2 size={14} />
-                                            </button>
                                             <button onClick={() => setDeletingId(meal.id)} className="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded transition-all">
                                                 <Trash2 size={14} />
                                             </button>
@@ -298,14 +278,6 @@ export default function SheetView() {
                     </tbody>
                 </table>
             </div>
-
-            {editingMeal && (
-                <EditModal
-                    initialData={editingMeal}
-                    onClose={() => setEditingMeal(null)}
-                    onSave={handleEditSave}
-                />
-            )}
 
             {deletingId && (
                 <DeleteConfirm

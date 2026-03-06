@@ -212,10 +212,12 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
                 <input type="text" name="remarks" value={remarks} onChange={e => setRemarks(e.target.value)} className="w-full" placeholder="Add any notes..." suppressHydrationWarning />
             </div>
 
-            <button type="submit" disabled={loading} className="primary-btn mt-4 flex items-center justify-center gap-2 w-full md:w-auto self-start disabled:opacity-70 disabled:cursor-not-allowed">
-                {loading ? <Loader2 size={18} className="animate-spin" /> : isEditing ? <Send size={18} /> : <CopyPlus size={18} />}
-                {loading ? "Saving..." : isEditing ? "Save Changes" : "Save Entry"}
-            </button>
+            <div className="sticky bottom-[88px] z-20 mt-auto pt-4 pb-2 bg-white/80 backdrop-blur-sm shadow-[0_-10px_15px_-3px_rgba(255,255,255,0.9)]">
+                <button type="submit" disabled={loading} className="primary-btn flex items-center justify-center gap-2 w-full md:w-auto disabled:opacity-70 disabled:cursor-not-allowed mx-auto shadow-lg hover:shadow-xl transition-all">
+                    {loading ? <Loader2 size={18} className="animate-spin" /> : isEditing ? <Send size={18} /> : <CopyPlus size={18} />}
+                    {loading ? "Saving..." : isEditing ? "Save Changes" : "Save Entry"}
+                </button>
+            </div>
 
             {/* Success Toast */}
             {showSuccess && (
