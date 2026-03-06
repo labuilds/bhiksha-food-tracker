@@ -117,30 +117,31 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-            <h2 className="text-2xl font-bold tracking-tight text-stone-800 mb-2">{isEditing ? "Edit Meal Entry" : "New Meal Entry"}</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col h-full relative">
+            <div className="bg-white border text-stone-800 border-stone-200 shadow-sm rounded-2xl flex-1 overflow-y-auto px-4 pt-4 pb-20 flex flex-col gap-6 mb-[100px]">
+                <h2 className="text-2xl font-bold tracking-tight text-stone-800 mb-2">{isEditing ? "Edit Meal Entry" : "New Meal Entry"}</h2>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                    <label>Date</label>
-                    <input type="date" name="date" required value={date} onChange={e => setDate(e.target.value)} className="w-full" suppressHydrationWarning />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <label>Date</label>
+                        <input type="date" name="date" required value={date} onChange={e => setDate(e.target.value)} className="w-full" suppressHydrationWarning />
+                    </div>
+                    <div>
+                        <label>Meal Type</label>
+                        <select name="meal_type" value={mealType} onChange={e => setMealType(e.target.value as MealType)} className="w-full" suppressHydrationWarning>
+                            <option value="Brunch">Brunch</option>
+                            <option value="Dinner">Dinner</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Volunteers</label>
+                        <input type="number" name="volunteers_count" required min="0" value={volunteersCount} onChange={e => setVolunteersCount(e.target.value)} className="w-full" suppressHydrationWarning />
+                    </div>
+                    <div>
+                        <label>Staff</label>
+                        <input type="number" name="staff_count" required min="0" value={staffCount} onChange={e => setStaffCount(e.target.value)} className="w-full" suppressHydrationWarning />
+                    </div>
                 </div>
-                <div>
-                    <label>Meal Type</label>
-                    <select name="meal_type" value={mealType} onChange={e => setMealType(e.target.value as MealType)} className="w-full" suppressHydrationWarning>
-                        <option value="Brunch">Brunch</option>
-                        <option value="Dinner">Dinner</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Volunteers</label>
-                    <input type="number" name="volunteers_count" required min="0" value={volunteersCount} onChange={e => setVolunteersCount(e.target.value)} className="w-full" suppressHydrationWarning />
-                </div>
-                <div>
-                    <label>Staff</label>
-                    <input type="number" name="staff_count" required min="0" value={staffCount} onChange={e => setStaffCount(e.target.value)} className="w-full" suppressHydrationWarning />
-                </div>
-            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-1" ref={dropdownRef}>
@@ -207,13 +208,14 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
                 </div>
             </div>
 
-            <div>
-                <label>Remarks (Optional)</label>
-                <input type="text" name="remarks" value={remarks} onChange={e => setRemarks(e.target.value)} className="w-full" placeholder="Add any notes..." suppressHydrationWarning />
+                <div>
+                    <label>Remarks (Optional)</label>
+                    <input type="text" name="remarks" value={remarks} onChange={e => setRemarks(e.target.value)} className="w-full" placeholder="Add any notes..." suppressHydrationWarning />
+                </div>
             </div>
 
-            <div className="sticky bottom-[88px] z-20 mt-auto pt-4 pb-2 bg-white/80 backdrop-blur-sm shadow-[0_-10px_15px_-3px_rgba(255,255,255,0.9)]">
-                <button type="submit" disabled={loading} className="primary-btn flex items-center justify-center gap-2 w-full md:w-auto disabled:opacity-70 disabled:cursor-not-allowed mx-auto shadow-lg hover:shadow-xl transition-all">
+            <div className="absolute bottom-4 left-0 right-0 z-20 px-2 flex justify-center">
+                <button type="submit" disabled={loading} className="primary-btn flex items-center justify-center gap-2 w-full md:w-auto mx-auto shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-xl transition-all">
                     {loading ? <Loader2 size={18} className="animate-spin" /> : isEditing ? <Send size={18} /> : <CopyPlus size={18} />}
                     {loading ? "Saving..." : isEditing ? "Save Changes" : "Save Entry"}
                 </button>
