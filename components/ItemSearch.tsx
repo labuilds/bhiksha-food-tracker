@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ChevronDown, ChevronRight, Search } from "lucide-react";
+import { ChevronDown, ChevronRight, Search, Download, Loader2 } from "lucide-react";
+import { formatDateDDMMYYYY } from "@/lib/utils/format";
 
 export default function ItemSearch() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -10,6 +11,12 @@ export default function ItemSearch() {
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
     const [subTableData, setSubTableData] = useState<any[]>([]);
     const [loadingSub, setLoadingSub] = useState(false);
+
+    // Export State
+    const [exportStart, setExportStart] = useState("");
+    const [exportEnd, setExportEnd] = useState("");
+    const [exportLoading, setExportLoading] = useState(false);
+    const [toastMsg, setToastMsg] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchSearch = async () => {
@@ -51,10 +58,103 @@ export default function ItemSearch() {
         setLoadingSub(false);
     };
 
+    const handleExport = async () => {
+        setExportLoading(true);
+        setToastMsg(null);
+        try {
+            const params = new URLSearchParams();
+            if (exportStart) params.append("startDate", exportStart);
+            if (exportEnd) params.append("endDate", exportEnd);
+
+            const url = `/api/download?${params.toString()}`;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    setToastMsg("No data found for this range.");
+                    setTimeout(() => setToastMsg(null), 3000);
+                } else {
+                    setToastMsg("Export failed. Please try again.");
+                    setTimeout(() => setToastMsg(null), 3000);
+                }
+                setExportLoading(false);
+                return;
+            }
+
+            // Trigger file download
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+
+            // Build filename
+            let filename = "Bhiksha_Data_All_Time.xlsx";
+            if (exportStart && exportEnd) {
+                filename = `Bhiksha_Data_${formatDateDDMMYYYY(exportStart)}_to_${formatDateDDMMYYYY(exportEnd)}.xlsx`;
+            }
+
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+
+        } catch (error) {
+            console.error("Export error:", error);
+            setToastMsg("An error occurred during export.");
+            setTimeout(() => setToastMsg(null), 3000);
+        }
+        setExportLoading(false);
+    };
+
+    const isExportDisabled = exportLoading || (exportStart && !exportEnd) || (!exportStart && exportEnd);
+
     return (
-        <div className="glass-panel p-6 mt-8">
-            <div className="mb-8">
-                <h2 className="text-2xl font-bold tracking-tight text-stone-800 mb-6 mt-1">Item Data Analysis</h2>
+        <div className="glass-panel p-4 md:p-6 mt-4 md:mt-8 relative">
+
+            {/* Toast Notification */}
+            {toastMsg && (
+                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 bg-stone-800 text-white text-sm px-4 py-2 rounded-lg shadow-lg animate-in fade-in slide-in-from-top-2 duration-300">
+                    {toastMsg}
+                </div>
+            )}
+
+            {/* Export Section */}
+            <div className="mb-8 p-4 bg-orange-50/50 border border-orange-100 rounded-xl">
+                <h3 className="text-sm font-semibold text-stone-700 mb-3 uppercase tracking-wider">Export Data</h3>
+                <div className="flex flex-col sm:flex-row gap-3 items-end">
+                    <div className="w-full sm:w-auto">
+                        <label className="block text-xs text-stone-500 mb-1">Start Date</label>
+                        <input
+                            type="date"
+                            value={exportStart}
+                            onChange={e => setExportStart(e.target.value)}
+                            className="w-full bg-white border-stone-200 text-sm py-2"
+                        />
+                    </div>
+                    <div className="w-full sm:w-auto">
+                        <label className="block text-xs text-stone-500 mb-1">End Date</label>
+                        <input
+                            type="date"
+                            value={exportEnd}
+                            onChange={e => setExportEnd(e.target.value)}
+                            className="w-full bg-white border-stone-200 text-sm py-2"
+                        />
+                    </div>
+                    <button
+                        onClick={handleExport}
+                        disabled={!!isExportDisabled}
+                        className="w-full sm:w-auto h-[38px] px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-stone-300 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                    >
+                        {exportLoading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+                        <span>{exportLoading ? "Generating..." : "Download Excel"}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div className="mb-6 md:mb-8">
+                <h2 className="text-xl md:text-2xl font-bold tracking-tight text-stone-800 mb-4 md:mb-6 mt-1">Item Data Analysis</h2>
                 <div className="relative group">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-orange-500 transition-colors" size={20} />
                     <input
@@ -68,19 +168,19 @@ export default function ItemSearch() {
                 </div>
             </div>
 
-            <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white shadow-sm">
-                <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white shadow-sm pb-10 md:pb-0">
+                <table className="w-full text-left border-collapse min-w-[700px]">
                     <thead>
-                        <tr>
-                            <th className="w-10 whitespace-nowrap"></th>
-                            <th className="whitespace-nowrap">Date</th>
-                            <th className="whitespace-nowrap">Meal</th>
-                            <th className="whitespace-nowrap">Food Item</th>
-                            <th className="whitespace-nowrap">Cooked</th>
-                            <th className="whitespace-nowrap">Returned</th>
-                            <th className="whitespace-nowrap">Consumed</th>
-                            <th className="whitespace-nowrap">Per Person</th>
-                            <th className="whitespace-nowrap">Remarks</th>
+                        <tr className="bg-stone-50">
+                            <th className="w-10 whitespace-nowrap p-3"></th>
+                            <th className="whitespace-nowrap p-3 text-stone-500 font-semibold text-sm">Date</th>
+                            <th className="whitespace-nowrap p-3 text-stone-500 font-semibold text-sm">Meal</th>
+                            <th className="whitespace-nowrap p-3 text-stone-500 font-semibold text-sm">Food Item</th>
+                            <th className="whitespace-nowrap p-3 text-stone-500 font-semibold text-sm">Cooked</th>
+                            <th className="whitespace-nowrap p-3 text-stone-500 font-semibold text-sm">Returned</th>
+                            <th className="whitespace-nowrap p-3 text-stone-500 font-semibold text-sm">Consumed</th>
+                            <th className="whitespace-nowrap p-3 text-stone-500 font-semibold text-sm">Per Person</th>
+                            <th className="whitespace-nowrap p-3 text-stone-500 font-semibold text-sm">Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -98,7 +198,7 @@ export default function ItemSearch() {
                                         <td className="p-4 whitespace-nowrap">
                                             {expandedRow === meal.id ? <ChevronDown size={18} className="text-orange-500" /> : <ChevronRight size={18} className="text-stone-400" />}
                                         </td>
-                                        <td className="p-4 text-sm text-stone-600 whitespace-nowrap">{new Date(meal.date).toLocaleDateString()}</td>
+                                        <td className="p-4 text-sm text-stone-600 whitespace-nowrap">{formatDateDDMMYYYY(meal.date)}</td>
                                         <td className="p-4 text-sm text-stone-600 whitespace-nowrap">
                                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${meal.mealType === 'Brunch' ? 'bg-orange-50 text-orange-600 border border-orange-200' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
                                                 {meal.mealType}
@@ -118,7 +218,7 @@ export default function ItemSearch() {
                                                 <div className="pl-8 border-l-2 border-orange-200 ml-4 py-2">
                                                     <h4 className="text-sm font-medium text-stone-500 mb-4 flex items-center gap-2">
                                                         <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
-                                                        Other menu items from {meal.mealType} on {new Date(meal.date).toLocaleDateString()}
+                                                        Other menu items from {meal.mealType} on {formatDateDDMMYYYY(meal.date)}
                                                     </h4>
 
                                                     {loadingSub ? (

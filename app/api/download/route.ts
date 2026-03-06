@@ -1,11 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import * as XLSX from 'xlsx';
+import { formatDateDDMMYYYY } from '@/lib/utils/format';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
+        const startDate = request.nextUrl.searchParams.get('startDate');
+        const endDate = request.nextUrl.searchParams.get('endDate');
+
         const supabase = await createClient();
         const PAGE_SIZE = 1000;
         let allData: any[] = [];
@@ -13,12 +17,17 @@ export async function GET() {
         let page = 0;
 
         while (hasMore) {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('meal_entries')
                 .select('*')
                 .order('date', { ascending: false })
-                .order('created_at', { ascending: true })
-                .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+                .order('created_at', { ascending: true });
+
+            if (startDate && endDate) {
+                query = query.gte('date', startDate).lte('date', endDate);
+            }
+
+            const { data, error } = await query.range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
             if (error) throw error;
 
@@ -34,6 +43,10 @@ export async function GET() {
             }
         }
 
+        if (allData.length === 0) {
+            return NextResponse.json({ error: 'No data', empty: true }, { status: 404 });
+        }
+
         const liveData = allData;
 
         const worksheetData: any[] = [];
@@ -45,11 +58,7 @@ export async function GET() {
                 worksheetData.push({}); // Empty row separator
             }
 
-            let formattedDate = meal.date;
-            if (meal.date && meal.date.includes('-')) {
-                const [year, month, day] = meal.date.split('-');
-                formattedDate = `${day}/${month}/${year}`;
-            }
+            const formattedDate = formatDateDDMMYYYY(meal.date);
 
             worksheetData.push({
                 'Date': formattedDate,

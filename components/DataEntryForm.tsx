@@ -12,10 +12,36 @@ interface DataEntryFormProps {
 }
 
 export default function DataEntryForm({ initialData, action, isEditing = false }: DataEntryFormProps) {
-    const [date, setDate] = useState(initialData?.date ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+    const [date, setDate] = useState(initialData?.date ? new Date(initialData.date).toISOString().split('T')[0] : "");
     const [mealType, setMealType] = useState<MealType>(initialData?.mealType || "Brunch");
+
     const [volunteersCount, setVolunteersCount] = useState(initialData?.volunteersCount?.toString() || "");
     const [staffCount, setStaffCount] = useState(initialData?.staffCount?.toString() || "");
+
+    useEffect(() => {
+        if (!initialData?.date && !date) {
+            const lastDate = localStorage.getItem('last_used_date');
+            if (lastDate) {
+                setDate(lastDate);
+            } else {
+                setDate(new Date().toISOString().split('T')[0]);
+            }
+        }
+        if (!initialData?.mealType) {
+            const lastMeal = localStorage.getItem('last_used_meal');
+            if (lastMeal === 'Brunch' || lastMeal === 'Dinner') {
+                setMealType(lastMeal as MealType);
+            }
+        }
+        if (!initialData?.volunteersCount) {
+            const lastVolunteers = localStorage.getItem('last_used_volunteers');
+            if (lastVolunteers) setVolunteersCount(lastVolunteers);
+        }
+        if (!initialData?.staffCount) {
+            const lastStaff = localStorage.getItem('last_used_staff');
+            if (lastStaff) setStaffCount(lastStaff);
+        }
+    }, [initialData, date]);
     const [foodItem, setFoodItem] = useState(initialData?.foodItem || "");
     const [cookedQty, setCookedQty] = useState(initialData?.cookedQty?.toString() || "");
     const [returnedQty, setReturnedQty] = useState(initialData?.returnedQty?.toString() || "");
@@ -71,7 +97,12 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
                 setCookedQty("");
                 setReturnedQty("");
                 setRemarks("");
-                // Keep date, mealType, counts same for faster multi-item entry
+
+                // Track persisting fields across tab switches
+                localStorage.setItem('last_used_date', date);
+                localStorage.setItem('last_used_meal', mealType);
+                localStorage.setItem('last_used_volunteers', volunteersCount);
+                localStorage.setItem('last_used_staff', staffCount);
 
                 setShowSuccess(true);
                 setTimeout(() => {
@@ -160,7 +191,7 @@ export default function DataEntryForm({ initialData, action, isEditing = false }
                 </div>
                 <div>
                     <label>Returned Qty (kg/L)</label>
-                    <input type="number" name="returned_qty" step="0.01" required min="0" value={returnedQty} onChange={e => setReturnedQty(e.target.value)} className="w-full" suppressHydrationWarning />
+                    <input type="number" name="returned_qty" step="0.01" min="0" value={returnedQty} onChange={e => setReturnedQty(e.target.value)} className="w-full" suppressHydrationWarning />
                 </div>
             </div>
 
